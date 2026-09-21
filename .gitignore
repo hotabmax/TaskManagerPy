@@ -1,9 +1,9 @@
 venv/
-.pylintrc
-_pycache_/
-
-.idea/
-.env
-
-db.sqlite3
-media/
+#.pylintrc
+#_pycache_/
+#
+#.idea/
+#.env
+#
+#db.sqlite3
+#media/
