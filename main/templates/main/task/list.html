@@ -1,0 +1,17 @@
+{% extends "main/base.html" %}
+
+{% block title %}
+    <h1><a href="/">Задачи</a></h1>
+{% endblock title %}
+
+{% block content %}
+    {% for task in tasks %}
+    <div>
+        <p>{{ task.created }}</p>
+        <p>{{ task.name }}</p>
+        <p>{{ task.description }}</p>
+        <p>{{ task.priority }}</p>
+        <p>{{ task.completed }}</p>
+    </div>
+    {% endfor %}
+{% endblock content %}
