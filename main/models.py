@@ -1,12 +1,13 @@
 from django.db import models
 
+
 class Priority(models.Model):
     name = models.CharField(max_length=100, db_index=True)
 
     class Meta:
         verbose_name_plural = "Приоритеты"
         verbose_name = "Приоритет"
-        ordering = ('name',)
+        ordering = ('id',)
 
     def __str__(self):
         return self.name

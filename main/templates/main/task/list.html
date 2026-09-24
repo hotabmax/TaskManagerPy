@@ -1,17 +1,23 @@
 {% extends "main/base.html" %}
 
-{% block title %}
-    <h1><a href="/">Задачи</a></h1>
-{% endblock title %}
+{% block title %}Задачт{% endblock title %}  
 
 {% block content %}
     {% for task in tasks %}
-    <div>
-        <p>{{ task.created }}</p>
-        <p>{{ task.name }}</p>
-        <p>{{ task.description }}</p>
-        <p>{{ task.priority }}</p>
-        <p>{{ task.completed }}</p>
-    </div>
+        <div class="list-group">
+        <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
+            <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ task.name }}</h5>
+            <small>{{ task.created|date:"d.m.Y, H:i, e"}}</small>
+            </div>
+            <p class="mb-1">{{ task.description }}</p>
+            <small>Приоритет: {{ task.priority }}</small>
+            {% if task.completed %}
+            <small>Статус: Выполнено</small>
+            {% else %}
+            <small>Статус: В работе</small>
+            {% endif %}
+        </a>
+        </div>
     {% endfor %}
 {% endblock content %}
