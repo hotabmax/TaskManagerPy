@@ -11,7 +11,7 @@
 </head>
 <body>
     <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
-        <a class="navbar-brand --bs-light-text-emphasis" href="#">Задачи</a>
+        <a class="navbar-brand --bs-light-text-emphasis" href="{% url 'main:task_list' %}">Задачи</a>
     </nav>
 {% block header %}{% endblock header %}     
 {% block content %}{% endblock content %}

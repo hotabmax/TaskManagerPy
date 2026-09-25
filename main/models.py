@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Priority(models.Model):
@@ -23,7 +24,10 @@ class Task(models.Model):
     class Meta:
         verbose_name_plural = "Задачи"
         verbose_name = "Задача"
-        ordering = ('priority',)
+        ordering = ('priority', 'completed')
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('main:task_details', args=[self.id])

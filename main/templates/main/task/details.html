@@ -1,0 +1,22 @@
+{% extends "main/base.html" %}
+
+{% block title %}Задачи{% endblock title %}  
+
+{% block content %}
+    <label for="exampleFormControlTextarea1" class="form-label">Задача</label>
+    <input class="form-control" type="text" value="{{ task.name }}" aria-label="readonly input example" readonly>
+    <div class="mb-3">
+    <label for="exampleFormControlTextarea1" class="form-label">Описание</label>
+    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" readonly>{{ task.description }}</textarea>
+    </div>
+    <label for="exampleFormControlTextarea1" class="form-label">Приоритет</label>
+    <input class="form-control" type="text" value="{{ task.priority }}" aria-label="readonly input example" readonly>
+    <label for="exampleFormControlTextarea1" class="form-label">Добвлена</label>
+    <input class="form-control" type="text" value="{{ task.created|date:'d.m.Y, H:i, e'}}" aria-label="readonly input example" readonly>
+    <label for="exampleFormControlTextarea1" class="form-label">Статус</label>
+    {% if task.completed %}
+            <input class="form-control" type="text" value="Выполнено" aria-label="readonly input example" readonly>
+        {% else %}
+            <input class="form-control" type="text" value="В работе" aria-label="readonly input example" readonly>
+    {% endif %}
+{% endblock content %}
