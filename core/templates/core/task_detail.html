@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+{% load roles %}
+
+{% block extra_css %}
+    <link href="{% static 'css/task_detail.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block title %}Задача: {{ task.title }}{% endblock %}
+
+{% block content %}
+    <div class="detail-container">
+        
+        <!-- КНОПКИ УПРАВЛЕНИЯ НАВЕРХУ -->
+        <div class="detail-actions">
+            <a href="{% url 'task-list' %}" class="btn btn-sm btn-outline-secondary">
+                &larr; Назад к списку
+            </a>
+            
+            {% if user|has_group:"Начальник" %}
+                <a href="{% url 'task-update' task.pk %}" class="btn btn-sm btn-primary">
+                    Редактировать
+                </a>
+                
+                <form action="{% url 'task-delete' task.pk %}" method="post" class="inline-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger"
+                            onclick="return confirm('Удалить задачу &quot;{{ task.title }}&quot;?')">
+                        Удалить
+                    </button>
+                </form>
+            {% endif %}
+            {% if user|has_group:"Подчиненный" and task.executor == user %}
+                <form method="post" action="{% url 'task-status' task.pk %}" class="inline-form status-form-detail">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="{{ task.status|yesno:'False,True' }}">
+                    <button type="submit" class="btn btn-sm btn-success">
+                        Отметить как {% if task.status %}не готово{% else %}готово{% endif %}
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+
+        <!-- ОСНОВНАЯ ИНФОРМАЦИЯ -->
+        <div class="detail-card">
+            <h1>{{ task.title }}</h1>
+            
+            <div class="priority-status">
+                <span class="priority-badge priority-{{ task.priority }}">
+                    {{ task.get_priority_display }}
+                </span>
+                <span class="status-badge status-{{ task.status|yesno:'done,in-progress' }}">
+                    {{ task.status|yesno:'Готово,В работе' }}
+                </span>
+            </div>
+
+            <div class="detail-grid">
+                
+                <!-- Левая колонка: Описание -->
+                <div class="detail-section">
+                    <h3>Описание</h3>
+                    {% if task.description %}
+                        <p class="description-text">{{ task.description|linebreaksbr }}</p>
+                    {% else %}
+                        <p class="text-muted"><i>Описание отсутствует.</i></p>
+                    {% endif %}
+                </div>
+
+                <!-- Правая колонка: Метаданные -->
+                <div class="detail-section">
+                    <h3>Информация</h3>
+                    <div class="meta-row">
+                        <span class="meta-label">Начальник (Автор):</span>
+                        <span class="meta-value">{{ task.author.get_full_name|default:task.author.username }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Исполнитель:</span>
+                        <span class="meta-value">
+                            {% if task.executor %}
+                                {{ task.executor.get_full_name|default:task.executor.username }}
+                            {% else %}
+                                <i>Не назначен</i>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Создано:</span>
+                        <span class="meta-value">{{ task.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Последнее изменение:</span>
+                        <span class="meta-value">{{ task.updated_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

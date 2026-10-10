@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load roles %} {# Наш кастомный фильтр для проверки групп #}
+
+{% block title %}Список задач{% endblock %}
+
+{% block content %}
+    <h1>Задачи</h1>
+
+    {% if user|has_group:"Начальник" %}
+        <p><a href="{% url 'task-create' %}">Создать новую задачу</a></p>
+    {% endif %}
+
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th style="border: 1px solid #ccc; padding: 8px;">Название</th>
+                <th style="border: 1px solid #ccc; padding: 8px;">Приоритет</th>
+                <th style="border: 1px solid #ccc; padding: 8px;">Статус</th>
+                <th style="border: 1px solid #ccc; padding: 8px;">Начальник</th>
+                <th style="border: 1px solid #ccc; padding: 8px;">Исполнитель</th>
+                <th style="border: 1px solid #ccc; padding: 8px;">Создано</th>
+                <th style="border: 1px solid #ccc; padding: 8px;">Изменено</th>
+                <th style="border: 1px solid #ccc; padding: 8px;">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+                <tr>
+                    <td style="border: 1px solid #ccc; padding: 8px;">{{ task.title }}</td>
+                    <td style="border: 1px solid #ccc; padding: 8px;">{{ task.get_priority_display }}</td>
+                    <td style="border: 1px solid #ccc; padding: 8px;">
+                        {% if task.status %}<span style="color:green;">Готово</span>{% else %}<span style="color:red;">В работе</span>{% endif %}
+                    </td>
+                    <td style="border: 1px solid #ccc; padding: 8px;">{{ task.author.username }}</td>
+                    <td style="border: 1px solid #ccc; padding: 8px;">
+                        {% if task.executor %}{{ task.executor.username }}{% else %}—{% endif %}
+                    </td>
+                    <td style="border: 1px solid #ccc; padding: 8px;">{{ task.created_at|date:"d.m.Y H:i" }}</td>
+                    <td style="border: 1px solid #ccc; padding: 8px;">{{ task.updated_at|date:"d.m.Y H:i" }}</td>
+                    <td style="border: 1px solid #ccc; padding: 8px;">
+                        {% if user|has_group:"Начальник" %}
+                            <a href="{% url 'task-update' task.pk %}">Редактировать</a> |
+                            <form action="{% url 'task-delete' task.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" style="color:red; background:none; border:none; padding:0; cursor:pointer;">Удалить</button>
+                            </form>
+                        {% endif %}
+                        {% if user|has_group:"Подчиненный" and task.executor == user %}
+                            <form method="post" action="{% url 'task-status' task.pk %}" style="display:inline; margin-left: 5px;">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="{{ task.status|yesno:'False,True' }}">
+                                <button type="submit">Отметить как {% if task.status %}не готово{% else %}готово{% endif %}</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="8" style="padding: 20px; text-align: center;">Задач нет.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

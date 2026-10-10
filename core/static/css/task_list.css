@@ -1,0 +1,103 @@
+/* --- ОСНОВНАЯ СЕТКА (GRID) --- */
+.task-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.no-tasks {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--muted-color);
+    font-size: 1.2em;
+    padding: 60px 20px;
+    font-style: italic;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+/* --- КАРТОЧКА ЗАДАЧИ --- */
+.task-card {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.task-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовок */
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+.task-header h3 {
+    margin: 0;
+    font-size: 1.25em;
+    color: #212529;
+    flex-grow: 1;
+}
+
+/* Бейдж приоритета */
+.priority-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #fff;
+    margin-left: 12px;
+    flex-shrink: 0;
+    align-self: flex-start;
+}
+.priority-High { background-color: #e74c3c; }
+.priority-Medium { background-color: #f39c12; }
+.priority-Low { background-color: #27ae60; }
+
+/* Описание */
+.task-description {
+    color: #495057;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    white-space: pre-wrap;
+    flex-grow: 1;
+}
+
+/* Сетка метаданных */
+.task-meta-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px 20px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #dee2e6;
+    font-size: 0.9em;
+    color: #6c757d;
+}
+.meta-item { display: contents; }
+.meta-label { color: #6c757d; font-weight: 600; min-width: 90px; }
+.meta-value { color: #212529; word-break: break-word; }
+.status-done { color: #27ae60; font-weight: 500; }
+.status-in-progress { color: #c0392b; font-weight: 500; }
+
+/* Кнопки */
+.task-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-top: 15px;
+    border-top: 1px solid #f1f3f5;
+}

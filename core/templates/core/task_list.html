@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+{% load roles %}
+
+{% block extra_css %}
+    <link href="{% static 'css/task_list.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block title %}Список задач{% endblock %}
+
+{% block content %}
+    <h1>Задачи</h1>
+
+    {% if user|has_group:"Начальник" %}
+        <p>
+            <a href="{% url 'task-create' %}" class="btn btn-primary">
+                Создать новую задачу
+            </a>
+        </p>
+    {% endif %}
+
+    <!-- Контейнер Grid -->
+    <div class="task-grid">
+        {% for task in tasks %}
+            <div class="task-card">
+                
+                <div class="task-header">
+                    <h3>
+                        <a href="{% url 'task-detail' task.pk %}" class="task-link">
+                             {{ task.title }} 
+                        </a>
+                    </h3>
+                    <span class="priority-badge priority-{{ task.priority }}">
+                        {{ task.get_priority_display }}
+                    </span>
+                </div>
+
+                {% if task.description %}
+                    <p class="task-description">{{ task.description|linebreaksbr }}</p>
+                {% endif %}
+
+                <div class="task-meta-grid">
+                    <div class="meta-item">
+                        <span class="meta-label">Статус:</span>
+                        <span class="meta-value status-{{ task.status|yesno:'done,in-progress' }}">
+                            {{ task.status|yesno:'Готово,В работе' }}
+                        </span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Начальник:</span>
+                        <span class="meta-value">{{ task.author.username }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Исполнитель:</span>
+                        <span class="meta-value">
+                            {% if task.executor %}
+                                {{ task.executor.username }}
+                            {% else %}
+                                <i>Не назначен</i>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Создано:</span>
+                        <span class="meta-value">{{ task.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Изменено:</span>
+                        <span class="meta-value">{{ task.updated_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                </div>
+
+                <div class="task-actions">
+                    {% if user|has_group:"Начальник" %}
+                        <a href="{% url 'task-update' task.pk %}" class="btn btn-sm btn-outline-secondary">Редактировать</a>
+                        
+                        <form action="{% url 'task-delete' task.pk %}" method="post" class="inline-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Удалить задачу &quot;{{ task.title }}&quot;?')">
+                                Удалить
+                            </button>
+                        </form>
+                    {% endif %}
+
+                    {% if user|has_group:"Подчиненный" and task.executor == user %}
+                        <form method="post" action="{% url 'task-status' task.pk %}" class="inline-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="{{ task.status|yesno:'False,True' }}">
+                            <button type="submit" class="btn btn-sm btn-success">
+                                Отметить как {% if task.status %}не готово{% else %}готово{% endif %}
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+
+            </div>
+        {% empty %}
+            <p class="no-tasks">Задач нет.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

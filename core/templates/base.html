@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Django Tasks{% endblock %}</title>
+    <link href="{% static 'css/base.css' %}" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="nav">
+        {% if user.is_authenticated %}
+            Вы вошли как {{ user.username }} | 
+            <form method="post" action="{% url 'logout' %} ">
+                {% csrf_token %}
+            <button type="submit">Выйти</button> </form> 
+        {% endif %}
+    </nav>
+
+    <!-- Блок сообщений (положите его сразу после <h1> или в начале блока content) -->
+    {% if messages %}
+    <div class="notification-container">
+        {% for message in messages %}
+            <!-- Определяем тип иконки через теги -->
+            {% if message.tags == 'success' %}
+                <div class="notification success">
+                    <span class="icon">&#10003;</span>
+            {% elif message.tags == 'error' %}
+                <div class="notification error">
+                    <span class="icon">&#10060;</span>
+            {% elif message.tags == 'warning' %}
+                <div class="notification warning">
+                    <span class="icon">&#9888;</span>
+            {% else %}
+                <div class="notification info">
+                    <span class="icon">&#128712;</span>
+            {% endif %}
+            
+                    <span class="text">{{ message }}</span>
+                    <button type="button" class="close-btn" aria-label="Закрыть" onclick="this.parentElement.remove()">&times;</button>
+                </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Удалить задачу{% endblock %}
+
+{% block content %}
+    <h1>Удалить задачу</h1>
+    
+    <p>Вы уверены, что хотите удалить задачу "{{ object.title }}"?</p>
+    
+    <!-- 
+        Обратите внимание: форма должна вести на тот же URL (action=""),
+        который вызвал эту страницу. 
+    -->
+    <form method="post" action="">
+        {% csrf_token %}
+        <!-- 
+            {{ form }} здесь выводить не обязательно, так как мы ничего не редактируем.
+            Но если вы хотите увидеть скрытые поля ID, можно оставить.
+        -->
+        
+        <button type="submit" class="btn btn-danger">Да, удалить</button>
+        <a href="{% url 'task-list' %}" class="btn btn-secondary">Отмена</a>
+    </form>
+{% endblock %}

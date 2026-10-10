@@ -1,0 +1,119 @@
+/* --- СТРАНИЦА ДЕТАЛЬНОГО ПРОСМОТРА --- */
+.detail-container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 15px;
+}
+
+/* Кнопки управления */
+.detail-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Карточка */
+.detail-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 30px 40px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+}
+.detail-card h1 {
+    margin-top: 0;
+    font-size: 2em;
+    color: #212529;
+    margin-bottom: 15px;
+}
+
+/* Бейджи приоритета и статуса */
+.priority-status {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+.status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #fff;
+}
+.status-done { background-color: #28a745; }
+.status-in-progress { background-color: #dc3545; }
+
+/* Сетка внутри карточки */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    margin-top: 10px;
+}
+.detail-section h3 {
+    margin-top: 0;
+    font-size: 1.3em;
+    color: #495057;
+    border-bottom: 2px solid #f1f3f5;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+.description-text {
+    line-height: 1.8;
+    color: #343a40;
+    white-space: pre-wrap;
+    font-size: 1.05em;
+}
+.meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #eee;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.meta-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.meta-label {
+    color: #6c757d;
+    font-weight: 600;
+    min-width: 140px;
+    flex-shrink: 0;
+}
+.meta-value {
+    color: #212529;
+    word-break: break-word;
+    flex-grow: 1;
+}
+.text-muted { color: #6c757d; }
+.text-muted i { font-style: normal; opacity: 0.8; }
+
+/* Ссылка на заголовок */
+.task-link {
+    color: #212529;
+    text-decoration: none;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: block;
+    padding: 4px 0;
+    border-radius: 4px;
+}
+.task-link:hover {
+    color: #0d6efd;
+    transform: translateX(3px);
+}
+.task-card { position: relative; cursor: pointer; }
+.task-header { position: relative; z-index: 2; }
+.task-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
