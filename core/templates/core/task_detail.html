@@ -13,18 +13,18 @@
         
         <!-- КНОПКИ УПРАВЛЕНИЯ НАВЕРХУ -->
         <div class="detail-actions">
-            <a href="{% url 'task-list' %}" class="btn btn-sm btn-outline-secondary">
+            <a href="{% url 'task-list' %}" class="btn btn-sm btn-outline-secondary btn-back">
                 &larr; Назад к списку
             </a>
             
             {% if user|has_group:"Начальник" %}
-                <a href="{% url 'task-update' task.pk %}" class="btn btn-sm btn-primary">
+                <a href="{% url 'task-update' task.pk %}" class="btn btn-sm btn-primary btn-back">
                     Редактировать
                 </a>
                 
                 <form action="{% url 'task-delete' task.pk %}" method="post" class="inline-form">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-danger"
+                    <button type="submit" class="btn btn-sm btn-danger btn-back"
                             onclick="return confirm('Удалить задачу &quot;{{ task.title }}&quot;?')">
                         Удалить
                     </button>
@@ -34,7 +34,7 @@
                 <form method="post" action="{% url 'task-status' task.pk %}" class="inline-form status-form-detail">
                     {% csrf_token %}
                     <input type="hidden" name="status" value="{{ task.status|yesno:'False,True' }}">
-                    <button type="submit" class="btn btn-sm btn-success">
+                    <button type="submit" class="btn btn-sm btn-success btn-back">
                         Отметить как {% if task.status %}не готово{% else %}готово{% endif %}
                     </button>
                 </form>
