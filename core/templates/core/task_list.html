@@ -11,14 +11,6 @@
 {% block content %}
     <h1>Задачи</h1>
 
-    {% if user|has_group:"Начальник" %}
-        <p>
-            <a href="{% url 'task-create' %}" class="btn btn-primary">
-                Создать новую задачу
-            </a>
-        </p>
-    {% endif %}
-
     <!-- Контейнер Grid -->
     <div class="task-grid">
         {% for task in tasks %}

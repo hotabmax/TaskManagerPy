@@ -1,4 +1,5 @@
 {% load static %}
+{% load roles %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -8,14 +9,26 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="nav">
-        {% if user.is_authenticated %}
-            Вы вошли как {{ user.username }} | 
-            <form method="post" action="{% url 'logout' %} ">
-                {% csrf_token %}
-            <button type="submit">Выйти</button> </form> 
-        {% endif %}
-    </nav>
+    <header class="site-header">
+        <div class="header-left">
+            <span class="header-logo">&#128197;</span>
+            <span class="header-title">Task Manager</span>
+        </div>
+        <div class="header-right">
+            {% if user.is_authenticated %}
+                <span class="header-user">&#128100; {{ user.username }}</span>
+                {% if user|has_group:"Начальник" %}
+                    <a href="{% url 'task-create' %}" class="btn-header-create">&#10010; Создать задачу</a>
+                {% endif %}
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-header-logout">&#128682; Выйти</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-header-login">&#128274; Войти</a>
+            {% endif %}
+        </div>
+    </header>
 
     <!-- Блок сообщений (положите его сразу после <h1> или в начале блока content) -->
     {% if messages %}

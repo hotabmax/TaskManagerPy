@@ -147,3 +147,103 @@ h1 {
 
 /* Скрываем старые стили, если они остались */
 .flash { display: none; }
+
+/* ============================================
+   ВЕРХНЯЯ ПАНЕЛЬ (HEADER)
+   ============================================ */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    height: 64px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-logo {
+    font-size: 1.4em;
+}
+
+.header-title {
+    font-size: 1.15em;
+    font-weight: 700;
+    color: #343a40;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.header-user {
+    font-size: 0.9em;
+    color: #495057;
+    padding: 6px 14px;
+    background: var(--light-bg);
+    border-radius: 20px;
+}
+
+.btn-header-create {
+    padding: 8px 18px;
+    background: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85em;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.btn-header-create:hover {
+    background: var(--primary-dark, #0b5ed7);
+    transform: translateY(-1px);
+}
+
+.btn-header-logout {
+    padding: 8px 16px;
+    background: transparent;
+    color: var(--danger-color);
+    border: 1.5px solid var(--danger-color);
+    border-radius: 8px;
+    font-size: 0.85em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-header-logout:hover {
+    background: var(--danger-color);
+    color: #ffffff;
+}
+
+.btn-header-login {
+    padding: 8px 20px;
+    background: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85em;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.btn-header-login:hover {
+    background: var(--primary-dark, #0b5ed7);
+    transform: translateY(-1px);
+}
