@@ -213,6 +213,24 @@ h1 {
     transform: translateY(-1px);
 }
 
+.btn-header-employee {
+    padding: 8px 18px;
+    background: #198754;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85em;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.btn-header-employee:hover {
+    background: #157347;
+    transform: translateY(-1px);
+}
+
 .btn-header-logout {
     padding: 8px 16px;
     background: transparent;

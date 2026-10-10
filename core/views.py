@@ -3,8 +3,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView, DetailView
 from django.views import View
 from django.contrib import messages
+from django.contrib.auth.models import User
 from .models import Task
-from .forms import TaskForm, StatusForm
+from .forms import TaskForm, StatusForm, BossUserCreateForm, EmployeeUserCreateForm
 from django.urls import reverse_lazy
 
 # Групповой миксин для проверки роли "Начальник"
@@ -97,6 +98,51 @@ class TaskUpdateView(LoginRequiredMixin, BossRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         messages.success(self.request, 'Задача успешно изменена.')
+        return super().form_valid(form)
+
+
+# --- Создание пользователя с ролью "Подчиненный" (только для Начальника) ---
+class EmployeeUserCreateView(LoginRequiredMixin, BossRequiredMixin, CreateView):
+    model = User
+    form_class = EmployeeUserCreateForm
+    template_name = 'core/employee_user_form.html'
+    success_url = reverse_lazy('task-list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Пользователь успешно создан и добавлен в роль "Подчиненный".')
+        return super().form_valid(form)
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['username'] = f"employee_{User.objects.count() + 1}"
+        return initial
+
+
+# --- Создание пользователя с ролью "Начальник" (только для Начальника) ---
+class BossUserCreateView(LoginRequiredMixin, BossRequiredMixin, CreateView):
+    model = User
+    form_class = BossUserCreateForm
+    template_name = 'core/user_form.html'
+    success_url = reverse_lazy('task-list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Пользователь успешно создан и добавлен в роль "Начальник".')
+        return super().form_valid(form)
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['username'] = f"boss_{User.objects.count() + 1}"
+        return initial
+
+
+class BossUserUpdateView(LoginRequiredMixin, BossRequiredMixin, UpdateView):
+    model = User
+    form_class = BossUserCreateForm
+    template_name = 'core/user_form.html'
+    success_url = reverse_lazy('task-list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Данные пользователя успешно обновлены.')
         return super().form_valid(form)
 
     

@@ -1,0 +1,216 @@
+/* ============================================
+   ФОРМЫ ПОЛЬЗОВАТЕЛЕЙ
+   ============================================ */
+.user-form-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.user-form-card {
+    width: 100%;
+    max-width: 620px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    padding: 40px 45px;
+}
+
+.user-form-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.user-form-header h1 {
+    margin: 0;
+    font-size: 1.6em;
+    color: #343a40;
+}
+
+.role-badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.role-boss {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #664d03;
+}
+
+.role-employee {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark, #0b5ed7));
+    color: #ffffff;
+}
+
+.user-form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* --- Секции формы --- */
+.form-section {
+    background-color: var(--light-bg);
+    border-radius: 12px;
+    padding: 22px 24px;
+}
+
+.form-section-title {
+    margin: 0 0 18px 0;
+    font-size: 1em;
+    font-weight: 700;
+    color: #495057;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* --- Поля ввода --- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 16px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.88em;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="number"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 0.95em;
+    font-family: inherit;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+    box-sizing: border-box;
+    background-color: #ffffff;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #adb5bd;
+}
+
+/* --- Ошибки и подсказки --- */
+.form-error {
+    color: var(--danger-color);
+    font-size: 0.82em;
+    font-weight: 500;
+    padding: 6px 10px;
+    background-color: #f8d7da;
+    border-radius: 6px;
+    border-left: 3px solid var(--danger-color);
+}
+
+.form-helptext {
+    color: var(--muted-color);
+    font-size: 0.82em;
+    font-style: italic;
+}
+
+/* --- Кнопки --- */
+.form-actions {
+    display: flex;
+    gap: 14px;
+    margin-top: 10px;
+    justify-content: flex-start;
+    padding-top: 10px;
+}
+
+.btn-submit {
+    padding: 13px 32px;
+    background: linear-gradient(135deg, var(--primary-color), #0b5ed7);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.3);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.2);
+}
+
+.btn-cancel {
+    padding: 13px 32px;
+    background-color: #6c757d;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-cancel:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* --- Readonly поля --- */
+.form-group input[readonly] {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* --- Стилизованный select --- */
+.form-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23495057' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 38px;
+}
