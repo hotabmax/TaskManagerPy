@@ -8,43 +8,149 @@
 /* Кнопки управления */
 .detail-actions {
     display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
+    gap: 12px;
+    margin-bottom: 30px;
     flex-wrap: wrap;
     align-items: center;
 }
 
-/* --- Общий стиль кнопок "Назад" --- */
-.btn-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 18px;
-    background-color: transparent;
-    color: var(--primary-color);
-    border: 2px solid var(--primary-color);
-    border-radius: 8px;
-    font-size: 0.88em;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+/* ============================================
+   ПЕРЕОПРЕДЕЛЕНИЕ BOOTSTRAP-КНОПОК
+   ============================================ */
+.detail-container .btn,
+.detail-container .btn-back,
+.detail-container .btn-primary,
+.detail-container .btn-danger,
+.detail-container .btn-success {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 10px 22px !important;
+    font-size: 0.9em !important;
+    font-weight: 600 !important;
+    border: 2px solid transparent !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+    white-space: nowrap !important;
+    line-height: 1.4 !important;
 }
 
-.btn-back:hover {
-    background-color: var(--primary-color);
-    color: #ffffff;
-    transform: translateX(-3px);
+.detail-container .btn:hover,
+.detail-container .btn-back:hover,
+.detail-container .btn-primary:hover,
+.detail-container .btn-danger:hover,
+.detail-container .btn-success:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
-.btn-danger.btn-back:hover {
-    background-color: var(--danger-color);
-    border-color: var(--danger-color);
+.detail-container .btn:active,
+.detail-container .btn-back:active,
+.detail-container .btn-primary:active,
+.detail-container .btn-danger:active,
+.detail-container .btn-success:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
-.btn-success.btn-back:hover {
-    background-color: var(--success-color);
-    border-color: var(--success-color);
+/* ============================================
+   КНОПКА "НАЗАД К СПИСКУ" (outline-secondary)
+   ============================================ */
+.detail-container .btn-back {
+    background-color: transparent !important;
+    color: var(--primary-color) !important;
+    border: 2px solid var(--primary-color) !important;
+}
+
+.detail-container .btn-back:hover {
+    background-color: var(--primary-color) !important;
+    color: #ffffff !important;
+    transform: translateX(-4px) !important;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3) !important;
+}
+
+.detail-container .btn-back:active {
+    transform: translateX(-2px) !important;
+}
+
+/* ============================================
+   КНОПКА "РЕДАКТИРОВАТЬ" (primary)
+   ============================================ */
+.detail-container .btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), #0b5ed7) !important;
+    color: #ffffff !important;
+    border: 2px solid transparent !important;
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.25) !important;
+}
+
+.detail-container .btn-primary:hover {
+    background: linear-gradient(135deg, #0b5ed7, #0a58ca) !important;
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.35) !important;
+}
+
+.detail-container .btn-primary:active {
+    box-shadow: 0 2px 6px rgba(13, 110, 253, 0.2) !important;
+}
+
+/* ============================================
+   КНОПКА "УДАЛИТЬ" (danger)
+   ============================================ */
+.detail-container .btn-danger {
+    background: linear-gradient(135deg, var(--danger-color), #bb2d3b) !important;
+    color: #ffffff !important;
+    border: 2px solid transparent !important;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.25) !important;
+}
+
+.detail-container .btn-danger:hover {
+    background: linear-gradient(135deg, #bb2d3b, #a71d2a) !important;
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4) !important;
+}
+
+.detail-container .btn-danger:active {
+    box-shadow: 0 2px 6px rgba(220, 53, 69, 0.2) !important;
+}
+
+/* ============================================
+   КНОПКА "ОТМЕТИТЬ КАК ГОТОВО/НЕ ГОТОВО" (success)
+   ============================================ */
+.detail-container .btn-success {
+    background: linear-gradient(135deg, var(--success-color), #157347) !important;
+    color: #ffffff !important;
+    border: 2px solid transparent !important;
+    box-shadow: 0 2px 8px rgba(25, 135, 84, 0.25) !important;
+}
+
+.detail-container .btn-success:hover {
+    background: linear-gradient(135deg, #157347, #146c43) !important;
+    box-shadow: 0 6px 20px rgba(25, 135, 84, 0.35) !important;
+}
+
+.detail-container .btn-success:active {
+    box-shadow: 0 2px 6px rgba(25, 135, 84, 0.2) !important;
+}
+
+/* ============================================
+   АДАПТИВНОСТЬ
+   ============================================ */
+@media (max-width: 576px) {
+    .detail-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .detail-container .btn,
+    .detail-container .btn-back,
+    .detail-container .btn-primary,
+    .detail-container .btn-danger,
+    .detail-container .btn-success {
+        width: 100% !important;
+        justify-content: center !important;
+    }
 }
 
 /* Карточка */
