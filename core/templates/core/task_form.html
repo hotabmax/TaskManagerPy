@@ -1,10 +1,65 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link href="{% static 'css/task_form.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block title %}Создать задачу{% endblock %}
 {% block content %}
-    <h1>Создать задачу</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Создать</button>
-    </form>
+<div class="task-form-wrapper">
+    <div class="task-form-card">
+        <h1>&#128203; Создать задачу</h1>
+        <p class="task-form-subtitle">Заполните информацию для новой задачи</p>
+
+        <form method="post" class="task-form">
+            {% csrf_token %}
+
+            <div class="form-section">
+                <h3 class="form-section-title">&#128220; Основная информация</h3>
+
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}">Название</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="form-error">{{ form.title.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}">Описание</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="form-error">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="form-section-title">&#9889; Настройки</h3>
+
+                <div class="form-group">
+                    <label for="{{ form.priority.id_for_label }}">Приоритет</label>
+                    {{ form.priority }}
+                    {% if form.priority.errors %}
+                        <div class="form-error">{{ form.priority.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.executor.id_for_label }}">Исполнитель</label>
+                    {{ form.executor }}
+                    {% if form.executor.errors %}
+                        <div class="form-error">{{ form.executor.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Создать</button>
+                <a href="{% url 'task-list' %}" class="btn-cancel">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
