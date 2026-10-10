@@ -9,8 +9,11 @@
 {% block content %}
 <div class="task-form-wrapper">
     <div class="task-form-card">
-        <h1>&#128203; Создать задачу</h1>
-        <p class="task-form-subtitle">Заполните информацию для новой задачи</p>
+        <div class="form-header">
+            <h1>&#128203; Создать задачу</h1>
+            <p class="task-form-subtitle">Заполните информацию для новой задачи</p>
+            <a href="{% url 'task-list' %}" class="btn-back">&#8617; Назад к списку задач</a>
+        </div>
 
         <form method="post" class="task-form">
             {% csrf_token %}
