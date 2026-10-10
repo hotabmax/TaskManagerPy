@@ -1,10 +1,38 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link href="{% static 'css/login.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block title %}Вход{% endblock %}
 {% block content %}
-    <h1>Вход</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Войти</button>
-    </form>
+<div class="login-wrapper">
+    <div class="login-card">
+        <h1>&#128274; Вход</h1>
+        <p class="login-subtitle">Введите учётные данные для продолжения</p>
+
+        {% if form.errors %}
+        <div class="login-error-message">
+            &#10060; Неверное имя пользователя или пароль.
+        </div>
+        {% endif %}
+
+        <form method="post" class="login-form">
+            {% csrf_token %}
+
+            <p>
+                <label for="{{ form.username.id_for_label }}">Имя пользователя</label>
+                {{ form.username }}
+            </p>
+
+            <p>
+                <label for="{{ form.password.id_for_label }}">Пароль</label>
+                {{ form.password }}
+            </p>
+
+            <button type="submit" class="btn-login">Войти</button>
+        </form>
+    </div>
+</div>
 {% endblock %}

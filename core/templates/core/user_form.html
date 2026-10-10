@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}{% if object %}Редактировать пользователя{% else %}Создать пользователя{% endif %}{% endblock %}
+{% block content %}
+<div class="form-container">
+    <div class="user-form-header">
+        <h1>{% if object %}Редактировать пользователя{% else %}Создать пользователя{% endif %}</h1>
+        <span class="role-badge">&#9733; Начальник</span>
+    </div>
+
+    <form method="post" class="form-wrapper">
+        {% csrf_token %}
+
+        {% if not object %}
+        <div class="user-form-section">
+            <h3>&#128100; Данные пользователя</h3>
+            
+            {% if form.username.value %}
+            <p>
+                <label for="{{ form.username.id_for_label }}">Имя пользователя</label>
+                <input type="text" name="{{ form.username.name }}" value="{{ form.username.value }}" readonly style="background-color: #e9ecef; cursor: not-allowed;">
+                <span class="helptext">Имя присваивается автоматически</span>
+            </p>
+            {% else %}
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div class="form-error">{{ form.username.errors }}</div>
+            {% endif %}
+            {% endif %}
+
+            <p>
+                <label for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="form-error">{{ form.email.errors }}</div>
+                {% endif %}
+            </p>
+
+            <p>
+                <label for="{{ form.first_name.id_for_label }}">Имя</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <div class="form-error">{{ form.first_name.errors }}</div>
+                {% endif %}
+            </p>
+
+            <p>
+                <label for="{{ form.last_name.id_for_label }}">Фамилия</label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <div class="form-error">{{ form.last_name.errors }}</div>
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+
+        {% if not object %}
+        <div class="user-form-section">
+            <h3>&#128274; Безопасность</h3>
+            
+            <p>
+                <label for="{{ form.password.id_for_label }}">Пароль</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <div class="form-error">{{ form.password.errors }}</div>
+                {% endif %}
+            </p>
+
+            <p>
+                <label for="{{ form.password_confirm.id_for_label }}">Подтверждение пароля</label>
+                {{ form.password_confirm }}
+                {% if form.password_confirm.errors %}
+                    <div class="form-error">{{ form.password_confirm.errors }}</div>
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">
+                {% if object %}Сохранить изменения{% else %}Создать пользователя{% endif %}
+            </button>
+            <a href="{% url 'task-list' %}" class="btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
