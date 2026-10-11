@@ -1,5 +1,9 @@
+import uuid
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import permission_required
+from django.core.exceptions import PermissionDenied
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView, DetailView
 from django.views import View
 from django.contrib import messages
@@ -37,17 +41,20 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
     template_name = 'core/task_detail.html'
     context_object_name = 'task'
 
-    # Опционально: проверим, может ли пользователь видеть эту задачу
-    def get_queryset(self):
-        qs = super().get_queryset()
+    def get_object(self, queryset=None):
+        obj = get_object_or_404(Task, pk=self.kwargs['pk'])
+        
         # Начальник видит все задачи
         if self.request.user.groups.filter(name='Начальник').exists():
-            return qs
+            return obj
+        
         # Подчиненный видит только свои задачи
         if self.request.user.groups.filter(name='Подчиненный').exists():
-            return qs.filter(executor=self.request.user)
-        # Остальные авторизованные пользователи (если есть) не видят ничего
-        return qs.none()
+            if obj.executor == self.request.user:
+                return obj
+        
+        # Доступ запрещен
+        raise PermissionDenied("У вас нет доступа к этой задаче")
 
 # Создание задачи (только для Начальника)
 class TaskCreateView(LoginRequiredMixin, BossRequiredMixin, CreateView):
@@ -66,6 +73,10 @@ class TaskDeleteView(LoginRequiredMixin, BossRequiredMixin, DeleteView):
     model = Task
     template_name = 'core/task_confirm_delete.html'
     success_url = reverse_lazy('task-list')
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(author=self.request.user)
 
     def delete(self, request, *args, **kwargs):
         messages.info(self.request, 'Задача удалена.')
@@ -97,6 +108,10 @@ class TaskUpdateView(LoginRequiredMixin, BossRequiredMixin, UpdateView):
     template_name = 'core/task_update.html'
     success_url = reverse_lazy('task-list')
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(author=self.request.user)
+
     def form_valid(self, form):
         messages.success(self.request, 'Задача успешно изменена.')
         return super().form_valid(form)
@@ -115,7 +130,7 @@ class EmployeeUserCreateView(LoginRequiredMixin, BossRequiredMixin, CreateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        initial['username'] = f"employee_{User.objects.count() + 1}"
+        initial['username'] = f"employee_{uuid.uuid4().hex[:8]}"
         return initial
 
 
@@ -132,7 +147,7 @@ class BossUserCreateView(LoginRequiredMixin, BossRequiredMixin, CreateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        initial['username'] = f"boss_{User.objects.count() + 1}"
+        initial['username'] = f"boss_{uuid.uuid4().hex[:8]}"
         return initial
 
 

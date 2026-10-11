@@ -1,5 +1,4 @@
 from django.urls import path
-from django.contrib.auth.views import LoginView
 from . import views
 
 urlpatterns = [
@@ -9,9 +8,6 @@ urlpatterns = [
     path('edit/<int:pk>/', views.TaskUpdateView.as_view(), name='task-update'),
     path('delete/<int:pk>/', views.TaskDeleteView.as_view(), name='task-delete'),
     path('status/<int:pk>/', views.TaskStatusUpdateView.as_view(), name='task-status'),
-    
-    # Авторизация
-    path('login/', LoginView.as_view(template_name='core/login.html'), name='login'),
     
     # Управление пользователями - Начальник
     path('users/boss/create/', views.BossUserCreateView.as_view(), name='boss-user-create'),
