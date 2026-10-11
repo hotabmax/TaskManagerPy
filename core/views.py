@@ -76,17 +76,18 @@ class TaskDeleteView(LoginRequiredMixin, BossRequiredMixin, DeleteView):
 class TaskStatusUpdateView(LoginRequiredMixin, EmployeeRequiredMixin, View):
     def post(self, request, pk):
         task = get_object_or_404(Task, pk=pk)
-        form = StatusForm(request.POST, instance=task)
-        if task.executor == request.user:
-            form = StatusForm(request.POST, instance=task) 
-            if form.is_valid():
-                form.save()
-                messages.success(request, 'Статус задачи обновлен.')    
-            else:
-                messages.error(request, 'Ошибка обновления.')
-        else:
+        
+        if task.executor != request.user:
             messages.error(request, 'Вы не можете менять статус чужой задачи.')
-
+            return redirect('task-list')
+        
+        form = StatusForm(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Статус задачи обновлен.')
+        else:
+            messages.error(request, 'Ошибка обновления.')
+        
         return redirect('task-list')
 
 # --- Изменение задачи (Начальник) ---

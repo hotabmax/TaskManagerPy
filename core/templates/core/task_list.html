@@ -69,7 +69,7 @@
                         <form action="{% url 'task-delete' task.pk %}" method="post" class="inline-form">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-sm btn-outline-danger btn-back"
-                                    onclick="return confirm('Удалить задачу &quot;{{ task.title }}&quot;?')">
+                                    onclick="return confirm('Удалить задачу &quot;{{ task.title|escapejs }}&quot;?')">
                                 Удалить
                             </button>
                         </form>
