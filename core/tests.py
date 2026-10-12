@@ -248,11 +248,35 @@ class TaskListViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Test Task')
 
-    def test_boss_sees_all_tasks(self):
-        """Начальник видит все задачи"""
+    def test_boss_sees_only_his_tasks(self):
+        """Начальник видит только свои задачи или назначенные на него"""
+        # Создаём задачу, где boss_user — автор
+        boss_task = Task.objects.create(
+            title='Boss Task',
+            author=self.author
+        )
+        # Создаём задачу, где boss_user — исполнитель
+        boss_executor_task = Task.objects.create(
+            title='Boss as Executor',
+            author=self.executor,
+            executor=self.author
+        )
+        # Создаём задачу, где boss_user — ни автор, ни исполнитель
+        other_task = Task.objects.create(
+            title='Other Task',
+            author=self.executor,
+            executor=User.objects.create_user(
+                username='other_emp',
+                password='testpass123'
+            )
+        )
+        
         self.client.login(username='boss_user', password='testpass123')
         response = self.client.get(reverse('task-list'))
-        self.assertContains(response, 'Test Task')
+        self.assertContains(response, 'Test Task')  # executor=self.author
+        self.assertContains(response, 'Boss Task')  # author=self.author
+        self.assertContains(response, 'Boss as Executor')  # executor=self.author
+        self.assertNotContains(response, 'Other Task')  # не относится к boss_user
 
     def test_employee_sees_assigned_tasks(self):
         """Подчиненный видит только назначенные задачи"""
@@ -372,6 +396,31 @@ class TaskDetailViewTest(TestCase):
         """Исполнитель видит назначенную задачу"""
         self.client.login(username='emp_user', password='testpass123')
         response = self.client.get(reverse('task-detail', kwargs={'pk': self.task.pk}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_boss_cannot_see_others_task(self):
+        """Начальник не видит чужую задачу, если он не автор и не исполнитель"""
+        other_task = Task.objects.create(
+            title='Other Task',
+            author=self.executor,
+            executor=User.objects.create_user(
+                username='other_emp',
+                password='testpass123'
+            )
+        )
+        self.client.login(username='boss_user', password='testpass123')
+        response = self.client.get(reverse('task-detail', kwargs={'pk': other_task.pk}))
+        self.assertEqual(response.status_code, 403)
+
+    def test_boss_can_see_assigned_task(self):
+        """Начальник видит задачу, где он назначен исполнителем"""
+        boss_as_executor = Task.objects.create(
+            title='Boss as Executor Task',
+            author=self.executor,
+            executor=self.author
+        )
+        self.client.login(username='boss_user', password='testpass123')
+        response = self.client.get(reverse('task-detail', kwargs={'pk': boss_as_executor.pk}))
         self.assertEqual(response.status_code, 200)
 
     def test_other_employee_cannot_see_task(self):

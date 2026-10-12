@@ -1,5 +1,6 @@
 import uuid
 
+from django.db import models
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import permission_required
@@ -32,7 +33,12 @@ class TaskListView(LoginRequiredMixin, ListView):
         if self.request.user.groups.filter(name='Подчиненный').exists():
             # Подчиненный видит только задачи, где он назначен исполнителем 
             return qs.filter(executor=self.request.user) 
-            # Начальник видит все задачи
+        elif self.request.user.groups.filter(name='Начальник').exists():
+            # Начальник видит только свои задачи или задачи, где он назначен исполнителем
+            return qs.filter(
+                models.Q(author=self.request.user) | 
+                models.Q(executor=self.request.user)
+            ).distinct()
         return qs
 
 # --- Детальный просмотр задачи ---
@@ -44,11 +50,12 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
     def get_object(self, queryset=None):
         obj = get_object_or_404(Task, pk=self.kwargs['pk'])
         
-        # Начальник видит все задачи
+        # Начальник видит только свои задачи или задачи, где он назначен исполнителем
         if self.request.user.groups.filter(name='Начальник').exists():
-            return obj
+            if obj.author == self.request.user or obj.executor == self.request.user:
+                return obj
         
-        # Подчиненный видит только свои задачи
+        # Подчиненный видит только задачи, где он назначен исполнителем
         if self.request.user.groups.filter(name='Подчиненный').exists():
             if obj.executor == self.request.user:
                 return obj
