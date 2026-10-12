@@ -20,6 +20,7 @@
                 {% if user|has_group:"Начальник" %}
                     <a href="{% url 'task-create' %}" class="btn-header-create">&#10010; Создать задачу</a>
                     <a href="{% url 'employee-user-create' %}" class="btn-header-employee">&#128101; Добавить подчиненного</a>
+                    <a href="{% url 'boss-user-create' %}" class="btn-header-boss">&#127942; Добавить начальника</a>
                 {% endif %}
                 <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}

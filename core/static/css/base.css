@@ -265,3 +265,26 @@ h1 {
     background: var(--primary-dark, #0b5ed7);
     transform: translateY(-1px);
 }
+
+/* ============================================
+   КНОПКА "ДОБАВИТЬ НАЧАЛЬНИКА"
+   ============================================ */
+.btn-header-boss {
+    padding: 8px 18px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85em;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-header-boss:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+}
