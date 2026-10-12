@@ -463,3 +463,89 @@ class UserFormViewTest(TestCase):
         """Неавторизованный пользователь не может создать пользователя"""
         response = self.client.get(reverse('boss-user-create'))
         self.assertEqual(response.status_code, 302)
+
+
+# --- Тесты изменения статуса задачи ---
+
+class TaskStatusUpdateViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.boss = User.objects.create_user(
+            username='boss_user',
+            password='testpass123'
+        )
+        self.emp = User.objects.create_user(
+            username='emp_user',
+            password='testpass123'
+        )
+        self.boss_group, _ = Group.objects.get_or_create(name='Начальник')
+        self.emp_group, _ = Group.objects.get_or_create(name='Подчиненный')
+        self.boss.groups.add(self.boss_group)
+        self.emp.groups.add(self.emp_group)
+
+    def test_boss_can_update_status_when_assigned(self):
+        """Начальник может менять статус задачи, если он назначен исполнителем"""
+        task = Task.objects.create(
+            title='Task for Boss',
+            author=self.emp,
+            executor=self.boss,
+            status=False
+        )
+        self.client.login(username='boss_user', password='testpass123')
+        response = self.client.post(
+            reverse('task-status', kwargs={'pk': task.pk}),
+            {'status': 'True'}
+        )
+        task.refresh_from_db()
+        self.assertTrue(task.status)
+        self.assertEqual(response.status_code, 302)  # редирект на список
+
+    def test_emp_can_update_status_when_assigned(self):
+        """Подчиненный может менять статус назначенной задачи"""
+        task = Task.objects.create(
+            title='Task for Employee',
+            author=self.boss,
+            executor=self.emp,
+            status=False
+        )
+        self.client.login(username='emp_user', password='testpass123')
+        response = self.client.post(
+            reverse('task-status', kwargs={'pk': task.pk}),
+            {'status': 'True'}
+        )
+        task.refresh_from_db()
+        self.assertTrue(task.status)
+        self.assertEqual(response.status_code, 302)
+
+    def test_boss_cannot_update_status_when_not_assigned(self):
+        """Начальник не может менять статус чужой задачи"""
+        task = Task.objects.create(
+            title='Other Task',
+            author=self.emp,
+            executor=self.emp,
+            status=False
+        )
+        self.client.login(username='boss_user', password='testpass123')
+        response = self.client.post(
+            reverse('task-status', kwargs={'pk': task.pk}),
+            {'status': 'True'},
+            follow=True  # следовать за редиректом
+        )
+        task.refresh_from_db()
+        self.assertFalse(task.status)  # статус не изменился
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(any('чужой задачи' in str(m) for m in messages))
+
+    def test_unauthorized_cannot_update_status(self):
+        """Неавторизованный пользователь не может менять статус"""
+        task = Task.objects.create(
+            title='Task',
+            author=self.boss,
+            executor=self.emp
+        )
+        response = self.client.post(
+            reverse('task-status', kwargs={'pk': task.pk}),
+            {'status': 'True'}
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('login', response.url)

@@ -27,8 +27,8 @@
 | **Ролевой доступ (RBAC)** | Два роли: **Начальник** и **Подчинённый**, реализованные через Django Groups. |
 | **Полный CRUD задач** | Создание, просмотр, редактирование и удаление задач (только для начальника). |
 | **Назначение исполнителей** | Начальник выбирает подчинённого при создании / редактировании задачи. |
-| **Смена статуса** | Подчинённый может отметить задачу как выполненную / не выполненную. |
-| **Фильтрация по ролям** | Подчинённый видит **только свои** задачи; начальник видит **все** задачи. |
+| **Смена статуса** | Подчинённый и начальник (если назначен исполнителем) могут отметить задачу как выполненную / не выполненную. |
+| **Фильтрация по ролям** | Подчинённый видит **только свои** задачи; начальник видит **только свои задачи и назначенные на него**. |
 | **Управление пользователями** | Начальник может создавать учётные записи начальника и подчинённых (автоматическое назначение группы). |
 | **Уведомления (Flash Messages)** | Success / Error / Info / Warning уведомления через Django messages framework. |
 | **Bootstrap 5 UI** | Адаптивный интерфейс на основе карточной сетки. |
@@ -59,8 +59,7 @@ taskmanager/
 │   │   ├── login.html            # Страница входа
 │   │   ├── task_list.html        # Сетка задач
 │   │   ├── task_detail.html      # Детали задачи
-│   │   ├── task_form.html        # Создание задачи
-│   │   ├── task_update.html      # Редактирование задачи
+│   │   ├── task_form.html        # Создание и редактирование задачи
 │   │   ├── task_confirm_delete.html
 │   │   ├── user_form.html        # Создание/редактирование начальника
 │   │   └── employee_user_form.html
@@ -136,9 +135,10 @@ python manage.py runserver
 
 ### Начальник (`Group: "Начальник"`)
 
-- Видит **все** задачи
+- Видит **только свои задачи и назначенные на него** (где `author` или `executor`)
 - Создаёт / редактирует / удаляет задачи
 - Назначает исполнителей
+- Меняет статус задачи, если он назначен исполнителем
 - Создаёт новые учётные записи (начальников и подчинённых)
 - Доступ к админ-панели (`/admin/`)
 
@@ -147,6 +147,10 @@ python manage.py runserver
 - Видит **только** задачи, где он указан как `executor`
 - Может менять статус своих задач (выполнено / не выполнено)
 - Не может создавать, редактировать или удалять задачи
+
+### Смена статуса
+
+Любой пользователь (начальник или подчинённый) может изменить статус задачи, **если он назначен исполнителем** (`task.executor == user`).
 
 ### Реализация
 
@@ -209,7 +213,7 @@ python manage.py runserver
 | `create/` | `TaskCreateView` | `task-create` | Начальник |
 | `edit/<int:pk>/` | `TaskUpdateView` | `task-update` | Начальник |
 | `delete/<int:pk>/` | `TaskDeleteView` | `task-delete` | Начальник |
-| `status/<int:pk>/` | `TaskStatusUpdateView` | `task-status` | Подчинённый |
+| `status/<int:pk>/` | `TaskStatusUpdateView` | `task-status` | Исполнитель (начальник или подчинённый) |
 | `users/boss/create/` | `BossUserCreateView` | `boss-user-create` | Начальник |
 | `users/edit/<int:pk>/` | `BossUserUpdateView` | `boss-user-update` | Начальник |
 | `users/employee/create/` | `EmployeeUserCreateView` | `employee-user-create` | Начальник |
@@ -263,8 +267,7 @@ core/templates/core/
 ├── login.html          # Форма входа (Django LoginView)
 ├── task_list.html      # Карточная сетка задач
 ├── task_detail.html    # Полная информация о задаче
-├── task_form.html      # Форма создания задачи
-├── task_update.html    # Форма редактирования задачи
+├── task_form.html      # Форма создания и редактирования задачи
 ├── task_confirm_delete.html
 ├── user_form.html      # Форма создания/редактирования начальника
 └── employee_user_form.html
@@ -275,9 +278,10 @@ core/templates/core/
 ```
 core/static/css/
 ├── base.css            # Глобальные стили, хедер, уведомления
-├── task_list.css       # Стили карточной сетки
+├── task_list.css       # Стили карточной сетки и таблицы пользователей
 ├── task_detail.css     # Стили страницы задачи
 ├── task_form.css       # Стили форм
+├── user_form.css       # Стили форм пользователей
 └── login.css           # Стили страницы входа
 ```
 
@@ -311,9 +315,10 @@ core/static/css/
 | Форма | Класс | Использование |
 |---|---|---|
 | `TaskForm` | `ModelForm` | CRUD задач (поля: title, description, priority, status, executor) |
-| `StatusForm` | `Form` | Поле `status` (bool) для смены статуса подчинённым |
-| `BossUserCreateForm` | `ModelForm` | Создание начальника (User + Group assignment) |
-| `EmployeeUserCreateForm` | `ModelForm` | Создание подчинённого (User + Group assignment) |
+| `StatusForm` | `Form` | Поле `status` (bool) для смены статуса исполнителем |
+| `BaseUserCreateForm` | `ModelForm` (базовый) | Базовая форма создания пользователя с назначением группы |
+| `BossUserCreateForm` | `BaseUserCreateForm` | Создание/редактирование начальника |
+| `EmployeeUserCreateForm` | `BaseUserCreateForm` | Создание подчинённого |
 
 ### View-классы
 
@@ -324,18 +329,19 @@ core/static/css/
 | `TaskCreateView` | `CreateView` | Пустая форма | Создание | Начальник |
 | `TaskUpdateView` | `UpdateView` | Форма с данными | Обновление | Начальник |
 | `TaskDeleteView` | `DeleteView` | Подтверждение | Удаление | Начальник |
-| `TaskStatusUpdateView` | `UpdateView` | Форма статуса | Смена статуса | Подчинённый |
+| `TaskStatusUpdateView` | `View` | Смена статуса | Смена статуса | Исполнитель (начальник или подчинённый) |
 | `BossUserCreateView` | `CreateView` | Форма создания | Создание | Начальник |
 | `BossUserUpdateView` | `UpdateView` | Форма редактирования | Обновление | Начальник |
 | `EmployeeUserCreateView` | `CreateView` | Форма создания | Создание | Начальник |
 
 ###bekend-замечания
 
-- **Автоматические тесты отсутствуют** (`core/tests.py` пустой).
-- В `models.py` присутствует избыточный импорт `from django.db.models import Case, When, IntegerField` внутри тела `Meta` (строка 42).
-- Файл `task_list 3.html` — вероятный артефакт разработки (дубликат).
-- `BossUserCreateForm` переиспользуется и для начальника, и для подчинённого (логика различается).
-- `task_update.html` — отдельный шаблон для `TaskUpdateView`, не разделяется с `task_form.html`.
+Все замечания устранены:
+- ✅ **34 автоматических теста** покрывают модели, формы, представления и права доступа.
+- ✅ Избыточный импорт в `models.py` вынесен на уровень модуля.
+- ✅ Артефакт `task_list 3.html` удалён.
+- ✅ Общая логика форм вынесена в базовый класс `BaseUserCreateForm`.
+- ✅ `task_update.html` объединён с `task_form.html`.
 
 ---
 

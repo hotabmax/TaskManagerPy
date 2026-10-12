@@ -95,11 +95,12 @@ class TaskDeleteView(LoginRequiredMixin, BossRequiredMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
     
 
-# Изменение статуса (только для Подчиненного)
-class TaskStatusUpdateView(LoginRequiredMixin, EmployeeRequiredMixin, View):
+# Изменение статуса (для Подчиненного и Начальника, если он назначен исполнителем)
+class TaskStatusUpdateView(LoginRequiredMixin, View):
     def post(self, request, pk):
         task = get_object_or_404(Task, pk=pk)
         
+        # Проверка: пользователь должен быть исполнителем задачи
         if task.executor != request.user:
             messages.error(request, 'Вы не можете менять статус чужой задачи.')
             return redirect('task-list')

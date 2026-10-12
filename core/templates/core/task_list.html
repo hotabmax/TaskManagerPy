@@ -75,7 +75,7 @@
                         </form>
                     {% endif %}
 
-                    {% if user|has_group:"Подчиненный" and task.executor == user %}
+                    {% if task.executor == user %}
                         <form method="post" action="{% url 'task-status' task.pk %}" class="inline-form">
                             {% csrf_token %}
                             <input type="hidden" name="status" value="{{ task.status|yesno:'False,True' }}">
