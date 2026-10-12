@@ -5,13 +5,14 @@
     <link href="{% static 'css/task_form.css' %}" rel="stylesheet">
 {% endblock %}
 
-{% block title %}Создать задачу{% endblock %}
+{% block title %}{% if object %}Редактировать задачу{% else %}Создать задачу{% endif %}{% endblock %}
+
 {% block content %}
 <div class="task-form-wrapper">
     <div class="task-form-card">
         <div class="form-header">
-            <h1>&#128203; Создать задачу</h1>
-            <p class="task-form-subtitle">Заполните информацию для новой задачи</p>
+            <h1>{% if object %}&#9998;&#65039; Редактировать задачу{% else %}&#128203; Создать задачу{% endif %}</h1>
+            <p class="task-form-subtitle">{% if object %}{{ object.title }}{% else %}Заполните информацию для новой задачи{% endif %}</p>
             <a href="{% url 'task-list' %}" class="btn-back">&#8617; Назад к списку задач</a>
         </div>
 
@@ -59,7 +60,7 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn-submit">Создать</button>
+                <button type="submit" class="btn-submit">{% if object %}Сохранить изменения{% else %}Создать{% endif %}</button>
                 <a href="{% url 'task-list' %}" class="btn-cancel">Отмена</a>
             </div>
         </form>

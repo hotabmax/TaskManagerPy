@@ -68,6 +68,11 @@ class TaskCreateView(LoginRequiredMixin, BossRequiredMixin, CreateView):
         messages.success(self.request, 'Задача успешно создана!')
         return super().form_valid(form)
 
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['executor'] = self.request.user.pk
+        return initial
+
 # Удаление задачи (только для Начальника)
 class TaskDeleteView(LoginRequiredMixin, BossRequiredMixin, DeleteView):
     model = Task
@@ -105,7 +110,7 @@ class TaskStatusUpdateView(LoginRequiredMixin, EmployeeRequiredMixin, View):
 class TaskUpdateView(LoginRequiredMixin, BossRequiredMixin, UpdateView):
     model = Task
     form_class = TaskForm
-    template_name = 'core/task_update.html'
+    template_name = 'core/task_form.html'
     success_url = reverse_lazy('task-list')
 
     def get_queryset(self):
