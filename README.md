@@ -61,8 +61,7 @@ taskmanager/
 │   │   ├── task_detail.html      # Детали задачи
 │   │   ├── task_form.html        # Создание и редактирование задачи
 │   │   ├── task_confirm_delete.html
-│   │   ├── user_form.html        # Создание/редактирование начальника
-│   │   └── employee_user_form.html
+│   │   └── user_create_form.html # Единая форма для boss/employee
 │   └── static/css/               # Стили
 │       ├── base.css
 │       ├── task_list.css
@@ -154,12 +153,11 @@ python manage.py runserver
 
 ### Реализация
 
-Роль проверяется через `User.groups` и пользовательские миксины:
+Роль проверяется через `User.groups` и пользовательский миксин:
 
 | Миксин | Кто пропускает |
 |---|---|
 | `BossRequiredMixin` | Только начальников |
-| `EmployeeRequiredMixin` | Только подчинённых |
 
 Кастомный шаблонный фильтр `has_group(user, group_name)` используется в шаблонах для условного отображения кнопок.
 
@@ -230,12 +228,11 @@ python manage.py runserver
 | `LANGUAGE_CODE` | `ru` |
 | `DATABASE` | SQLite (`db.sqlite3`) |
 | `STATIC_URL` | `/static/` |
-| `MEDIA_URL` | `/media/` |
-| `LOGIN_URL` | `login` |
-| `LOGIN_REDIRECT_URL` | `task-list` |
-| `LOGOUT_REDIRECT_URL` | `login` |
+| `LOGIN_REDIRECT_URL` | `/` |
+| `LOGOUT_REDIRECT_URL` | `/` |
 | `CRISPY_ALLOWED_TEMPLATE_PACKS` | `bootstrap5` |
 | `CRISPY_TEMPLATE_PACK` | `bootstrap5` |
+| `AUTH_PASSWORD_MIN_LENGTH` | `8` символов |
 
 ### Переменные окружения
 
@@ -263,14 +260,13 @@ python manage.py runserver
 
 ```
 core/templates/core/
-├── base.html           # Базовый лейаут: хедер, навигация, flash-messages, footer
+├── base.html           # Базовый лейаут: хедер, навигация, flash-messages
 ├── login.html          # Форма входа (Django LoginView)
 ├── task_list.html      # Карточная сетка задач
 ├── task_detail.html    # Полная информация о задаче
 ├── task_form.html      # Форма создания и редактирования задачи
 ├── task_confirm_delete.html
-├── user_form.html      # Форма создания/редактирования начальника
-└── employee_user_form.html
+└── user_create_form.html  # Единая форма для создания/редактирования пользователей
 ```
 
 ### Статические файлы
@@ -337,11 +333,17 @@ core/static/css/
 ###bekend-замечания
 
 Все замечания устранены:
-- ✅ **34 автоматических теста** покрывают модели, формы, представления и права доступа.
+- ✅ **34+ автоматических теста** покрывают модели, формы, представления и права доступа.
 - ✅ Избыточный импорт в `models.py` вынесен на уровень модуля.
 - ✅ Артефакт `task_list 3.html` удалён.
 - ✅ Общая логика форм вынесена в базовый класс `BaseUserCreateForm`.
 - ✅ `task_update.html` объединён с `task_form.html`.
+- ✅ Дублирующие формы пользователей объединены в `user_create_form.html`.
+- ✅ `EmployeeRequiredMixin` удалён (не использовался).
+- ✅ `MAILERS` заменён на `EMAIL_BACKEND`.
+- ✅ `LANGUAGE_CODE` изменён на `ru`.
+- ✅ Минимальная длина пароля унифицирована: **8 символов** (settings, forms, widget).
+- ✅ `task_list.html` использует `get_full_name` вместо `username`.
 
 ---
 

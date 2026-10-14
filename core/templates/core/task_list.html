@@ -40,13 +40,13 @@
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">Начальник:</span>
-                        <span class="meta-value">{{ task.author.username }}</span>
+                        <span class="meta-value">{{ task.author.get_full_name|default:task.author.username }}</span>
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">Исполнитель:</span>
                         <span class="meta-value">
                             {% if task.executor %}
-                                {{ task.executor.username }}
+                                {{ task.executor.get_full_name|default:task.executor.username }}
                             {% else %}
                                 <i>Не назначен</i>
                             {% endif %}

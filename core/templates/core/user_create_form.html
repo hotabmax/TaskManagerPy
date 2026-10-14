@@ -15,7 +15,9 @@
                 <h1>{% if object %}Редактировать пользователя{% else %}Создать пользователя{% endif %}</h1>
                 <a href="{% url 'task-list' %}" class="btn-back">&#8617; Назад к списку задач</a>
             </div>
-            <span class="role-badge role-boss">&#9733; Начальник</span>
+            {% if role_name %}
+            <span class="role-badge {{ role_badge_class }}">{{ role_emoji }} {{ role_name }}</span>
+            {% endif %}
         </div>
 
         <form method="post" class="user-form">

@@ -201,6 +201,21 @@
     box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
 }
 
+/* --- Форма удаления --- */
+.delete-form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.btn-submit.btn-danger-submit {
+    background: linear-gradient(135deg, var(--danger-color), #bb2d3b);
+}
+
+.btn-submit.btn-danger-submit:hover {
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+}
+
 .btn-cancel {
     padding: 13px 32px;
     background-color: #6c757d;

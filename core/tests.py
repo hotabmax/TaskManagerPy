@@ -177,6 +177,20 @@ class UserFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('__all__', form.errors)
 
+    def test_user_form_short_password(self):
+        """Форма не проходит валидацию при коротком пароле (< 6 символов)"""
+        data = {
+            'username': f'test_{uuid.uuid4().hex[:8]}',
+            'email': 'test2@test.com',
+            'first_name': 'Ivan',
+            'last_name': 'Ivanov',
+            'password': '12345',
+            'password_confirm': '12345',
+        }
+        form = BossUserCreateForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('password', form.errors)
+
     def test_boss_user_creation(self):
         """Создание пользователя с ролью начальника"""
         data = {

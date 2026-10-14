@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User, Group
+from django.core.exceptions import ValidationError
 from .models import Task
 
 
@@ -8,8 +9,18 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ['title', 'description', 'priority', 'executor']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Введите название задачи'}),
-            'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-input', 'placeholder': 'Опишите задачу...'}),
+            'title': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Введите название задачи',
+                'required': True,
+                'autocomplete': 'off',
+            }),
+            'description': forms.Textarea(attrs={
+                'rows': 4,
+                'class': 'form-input',
+                'placeholder': 'Опишите задачу...',
+                'autocomplete': 'off',
+            }),
             'priority': forms.Select(attrs={'class': 'form-input'}),
             'executor': forms.Select(attrs={'class': 'form-input'}),
         }
@@ -28,11 +39,21 @@ class BaseUserCreateForm(forms.ModelForm):
     """Базовая форма для создания/редактирования пользователя с назначением роли"""
     password = forms.CharField(
         label='Пароль',
-        widget=forms.PasswordInput(attrs={'class': 'form-input'}),
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-input',
+            'required': True,
+            'autocomplete': 'new-password',
+            'minlength': 8,
+        }),
     )
     password_confirm = forms.CharField(
         label='Подтверждение пароля',
-        widget=forms.PasswordInput(attrs={'class': 'form-input'}),
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-input',
+            'required': True,
+            'autocomplete': 'new-password',
+            'minlength': 8,
+        }),
     )
     role_name = 'Роль'  # Переопределяется в подклассах
 
@@ -40,16 +61,35 @@ class BaseUserCreateForm(forms.ModelForm):
         model = User
         fields = ['username', 'email', 'first_name', 'last_name']
         widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-input', 'readonly': True}),
-            'email': forms.EmailInput(attrs={'class': 'form-input'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-input'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-input'}),
+            'username': forms.TextInput(attrs={
+                'class': 'form-input',
+                'readonly': True,
+                'autocomplete': 'username',
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-input',
+                'autocomplete': 'email',
+            }),
+            'first_name': forms.TextInput(attrs={
+                'class': 'form-input',
+                'autocomplete': 'given-name',
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'form-input',
+                'autocomplete': 'family-name',
+            }),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
             self.fields['username'].widget.attrs['readonly'] = True
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        if password and len(password) < 8:
+            raise ValidationError('Пароль должен содержать минимум 8 символов.')
+        return password
 
     def clean(self):
         cleaned_data = super().clean()

@@ -18,11 +18,6 @@ class BossRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.groups.filter(name='Начальник').exists()
 
-# Групповой миксин для проверки роли "Подчиненный"
-class EmployeeRequiredMixin(UserPassesTestMixin):
-    def test_func(self):
-        return self.request.user.groups.filter(name='Подчиненный').exists()
-
 # Главная страница - список задач (доступна всем авторизованным)
 class TaskListView(LoginRequiredMixin, ListView):
     model = Task
@@ -134,7 +129,7 @@ class TaskUpdateView(LoginRequiredMixin, BossRequiredMixin, UpdateView):
 class EmployeeUserCreateView(LoginRequiredMixin, BossRequiredMixin, CreateView):
     model = User
     form_class = EmployeeUserCreateForm
-    template_name = 'core/employee_user_form.html'
+    template_name = 'core/user_create_form.html'
     success_url = reverse_lazy('task-list')
 
     def form_valid(self, form):
@@ -146,12 +141,19 @@ class EmployeeUserCreateView(LoginRequiredMixin, BossRequiredMixin, CreateView):
         initial['username'] = f"employee_{uuid.uuid4().hex[:8]}"
         return initial
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['role_name'] = 'Подчиненный'
+        context['role_badge_class'] = 'role-employee'
+        context['role_emoji'] = '⚙️'
+        return context
+
 
 # --- Создание пользователя с ролью "Начальник" (только для Начальника) ---
 class BossUserCreateView(LoginRequiredMixin, BossRequiredMixin, CreateView):
     model = User
     form_class = BossUserCreateForm
-    template_name = 'core/user_form.html'
+    template_name = 'core/user_create_form.html'
     success_url = reverse_lazy('task-list')
 
     def form_valid(self, form):
@@ -163,15 +165,29 @@ class BossUserCreateView(LoginRequiredMixin, BossRequiredMixin, CreateView):
         initial['username'] = f"boss_{uuid.uuid4().hex[:8]}"
         return initial
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['role_name'] = 'Начальник'
+        context['role_badge_class'] = 'role-boss'
+        context['role_emoji'] = '⭐'
+        return context
+
 
 class BossUserUpdateView(LoginRequiredMixin, BossRequiredMixin, UpdateView):
     model = User
     form_class = BossUserCreateForm
-    template_name = 'core/user_form.html'
+    template_name = 'core/user_create_form.html'
     success_url = reverse_lazy('task-list')
 
     def form_valid(self, form):
         messages.success(self.request, 'Данные пользователя успешно обновлены.')
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['role_name'] = 'Начальник'
+        context['role_badge_class'] = 'role-boss'
+        context['role_emoji'] = '⭐'
+        return context
 
     
