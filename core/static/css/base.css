@@ -1,6 +1,7 @@
 /* --- БАЗОВЫЕ НАСТРОЙКИ И СБРОС --- */
 :root {
     --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
     --danger-color: #dc3545;
     --success-color: #198754;
     --warning-color: #ffc107;
