@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import permission_required
@@ -12,6 +13,16 @@ from django.contrib.auth.models import User
 from .models import Task
 from .forms import TaskForm, StatusForm, BossUserCreateForm, EmployeeUserCreateForm
 from django.urls import reverse_lazy
+
+
+# Health check endpoint
+def health_check(request):
+    """Health check endpoint for Docker and load balancers."""
+    return JsonResponse({
+        'status': 'healthy',
+        'service': 'taskmanager',
+    })
+
 
 # Групповой миксин для проверки роли "Начальник"
 class BossRequiredMixin(UserPassesTestMixin):

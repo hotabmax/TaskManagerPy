@@ -10,3 +10,7 @@ crispy-bootstrap5==2026.9
 asgiref==3.12.1
 sqlparse==0.6.0
 tzdata==2026.4
+
+# Production
+gunicorn==23.0.0
+whitenoise==6.9.0

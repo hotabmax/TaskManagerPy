@@ -365,13 +365,238 @@ Group ──< User (многие-ко-многим)
 
 ---
 
-## Сборка для production
+## Деплой в продакшен
+
+### Вариант 1: Docker (Рекомендуется)
+
+#### Сборка и запуск через Docker Compose
 
 ```bash
-# 1. Установить DEBUG=False в .env
-# 2. Установить секретный ключ
-# 3. Собрать статику
-python manage.py collectstatic
-# 4. Запустить через Gunicorn / uWSGI
-gunicorn taskmanager.wsgi
+# 1. Скопируйте и настройте переменные окружения
+cp .env.example .env
+
+# 2. Отредактируйте .env, указав правильные значения:
+#    - DJANGO_SECRET_KEY (сгенерируйте новый секретный ключ)
+#    - DJANGO_DEBUG=False
+#    - DJANGO_ALLOWED_HOSTS (ваш домен)
+#    - Email настройки (при необходимости)
+
+# 3. Соберите и запустите контейнеры
+docker-compose up -d --build
+
+# 4. Примените миграции в контейнере
+docker-compose exec web python manage.py migrate
+
+# 5. Создайте суперпользователя
+docker-compose exec web python manage.py createsuperuser
 ```
+
+#### Проверка здоровья приложения
+
+```bash
+# Health check endpoint
+curl http://localhost:8000/health/
+```
+
+#### Логи
+
+```bash
+# Просмотр логов
+docker-compose logs -f web
+
+# Остановка
+docker-compose down
+```
+
+---
+
+### Вариант 2: Прямой деплой на сервер
+
+#### 1. Подготовка сервера
+
+```bash
+# Установка Python и зависимостей
+sudo apt update
+sudo apt install python3-pip python3-venv postgresql nginx
+
+# Клонирование репозитория
+git clone <repository-url>
+cd taskmanager
+```
+
+#### 2. Настройка виртуального окружения
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+#### 3. Настройка переменных окружения
+
+```bash
+# Создайте .env файл
+cp .env.example .env
+# Отредактируйте .env с production-значениями
+```
+
+#### 4. Миграции и статика
+
+```bash
+# Примените миграции
+python manage.py migrate
+
+# Соберите статические файлы
+python manage.py collectstatic --noinput
+
+# Проверьте конфигурацию
+python manage.py check --deploy
+```
+
+#### 5. Запуск через Gunicorn
+
+```bash
+# Создайте systemd сервис
+sudo nano /etc/systemd/system/taskmanager.service
+```
+
+Содержимое файла сервиса:
+
+```ini
+[Unit]
+Description=TaskManager AI Django Application
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/path/to/taskmanager
+ExecStart=/path/to/taskmanager/venv/bin/gunicorn \
+    --access-logfile - \
+    --workers 4 \
+    --timeout 120 \
+    --bind unix:/path/to/taskmanager/taskmanager.sock \
+    taskmanager.wsgi:application
+
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+# Запустите сервис
+sudo systemctl start taskmanager
+sudo systemctl enable taskmanager
+sudo systemctl status taskmanager
+```
+
+#### 6. Настройка Nginx
+
+```bash
+sudo nano /etc/nginx/sites-available/taskmanager
+```
+
+Содержимое конфигурации Nginx:
+
+```nginx
+server {
+    listen 80;
+    server_name example.com www.example.com;
+
+    location / {
+        proxy_pass http://unix:/path/to/taskmanager/taskmanager.sock;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /static/ {
+        alias /path/to/taskmanager/staticfiles/;
+    }
+
+    location /health/ {
+        access_log off;
+        proxy_pass http://unix:/path/to/taskmanager/taskmanager.sock;
+    }
+}
+```
+
+```bash
+# Активируйте сайт
+sudo ln -s /etc/nginx/sites-available/taskmanager /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+---
+
+### Вариант 3: Heroku
+
+#### 1. Подготовка
+
+```bash
+# Установите Heroku CLI и войдите
+heroku login
+
+# Создайте новое приложение
+heroku create your-app-name
+
+# Добавьте PostgreSQL
+heroku addons:create heroku-postgresql:hobby-dev
+
+# Настройте переменные окружения
+heroku config:set DJANGO_SECRET_KEY=$(openssl rand -base64 50)
+heroku config:set DJANGO_DEBUG=False
+heroku config:set DJANGO_ALLOWED_HOSTS=your-app-name.herokuapp.com
+```
+
+#### 2. Деплой
+
+```bash
+# Добавьте remote
+git remote add heroku https://git.heroku.com/your-app-name.git
+
+# Деплой
+git push heroku main
+
+# Примените миграции
+heroku run python manage.py migrate
+
+# Создайте суперпользователя
+heroku run python manage.py createsuperuser
+
+# Откройте приложение
+heroku open
+```
+
+---
+
+### Вариант 4: Platform.sh / Railway / Render
+
+Все платформы поддерживают Docker. Используйте `Dockerfile` и `docker-compose.yml` для деплоя.
+
+#### Основные требования:
+
+1. Установите `DJANGO_DEBUG=False`
+2. Сгенерируйте новый `DJANGO_SECRET_KEY`
+3. Настройте `DJANGO_ALLOWED_HOSTS` с вашим доменом
+4. Настройте email backend для отправки уведомлений
+5. Настройте базу данных (PostgreSQL recommended)
+
+---
+
+### Production Checklist
+
+- [ ] `DJANGO_DEBUG=False`
+- [ ] Сильный `DJANGO_SECRET_KEY` (минимум 50 символов)
+- [ ] `DJANGO_ALLOWED_HOSTS` настроен с правильными доменами
+- [ ] Статика собрана: `python manage.py collectstatic`
+- [ ] Миграции применены: `python manage.py migrate`
+- [ ] Email backend настроен для production
+- [ ] HTTPS включен (через Nginx/Let's Encrypt или прокси)
+- [ ] База данных перенесена на PostgreSQL (опционально)
+- [ ] Резервное копирование базы данных настроено
+- [ ] Логи доступны и мониторятся
+- [ ] Health check endpoint работает: `/health/`
