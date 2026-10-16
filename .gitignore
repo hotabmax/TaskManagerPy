@@ -20,7 +20,6 @@ build/
 # Environment
 .env
 .env.local
-.env.*.local
 
 # Database
 db.sqlite3
